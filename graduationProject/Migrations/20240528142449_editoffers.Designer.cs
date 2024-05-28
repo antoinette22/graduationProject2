@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using graduationProject.core.DbContext;
 
@@ -11,9 +12,11 @@ using graduationProject.core.DbContext;
 namespace graduationProject.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20240528142449_editoffers")]
+    partial class editoffers
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -172,6 +175,7 @@ namespace graduationProject.Migrations
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("NationalIdUser")
+                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("NationalcardInvestor")
@@ -179,6 +183,7 @@ namespace graduationProject.Migrations
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("NationalcardUser")
+                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<int>("PostId")
@@ -191,6 +196,7 @@ namespace graduationProject.Migrations
                         .HasColumnType("float");
 
                     b.Property<string>("SignatureUser")
+                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");

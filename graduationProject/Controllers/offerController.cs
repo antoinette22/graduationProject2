@@ -1,6 +1,7 @@
 ﻿using graduationProject.core.DbContext;
 using graduationProject.core.Dtos;
 using graduationProject.DTOs.OfferDtos;
+using graduationProject.DTOs.OffersDtos;
 using graduationProject.Models;
 using graduationProject.Services;
 using Microsoft.AspNetCore.Authorization;
@@ -30,7 +31,7 @@ namespace graduationProject.Controllers
             _userService = userService;
         }
 
-        [HttpPost("send offer")]
+        [HttpPost("SendOffer")]
 
         public async Task<IActionResult> SendOfferAsync([FromForm] offerDto offer)
 
@@ -140,6 +141,16 @@ namespace graduationProject.Controllers
         {
             var result = await _userService.RefuseOffer(id);
             return Ok(result);
+        }
+        [HttpPost("AcceptOffer")]
+        public async Task<IActionResult> AcceptOffer([FromForm] AcceptOfferDto acceptOffer)
+        {
+            var result = await _userService.AcceptOffer(acceptOffer);
+            if (result != null)
+            {
+                return Ok(result);
+            }
+            return BadRequest("something went wrong");
         }
 
     }

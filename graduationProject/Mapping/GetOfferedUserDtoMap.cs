@@ -1,4 +1,5 @@
 ﻿using graduationProject.DTOs;
+using graduationProject.DTOs.OfferDtos;
 using graduationProject.Models;
 
 namespace graduationProject.Mapping
@@ -15,10 +16,17 @@ namespace graduationProject.Mapping
                 {
                     Id = post.Id,
                     Content = post.Content,
-                    Rrice = post.Offers.FirstOrDefault()?.Rrice ?? 0, // handle if Offers are null or empty
-                    Description = post.Offers.FirstOrDefault()?.Description,
-                    NationalId = post.Offers.FirstOrDefault()?.NationalId,
-                    ProfitRate = post.Offers.FirstOrDefault()?.ProfitRate ?? 0 // handle if Offers are null or empty
+                    //Rrice = post.Offers.FirstOrDefault()?.Price ?? 0, // handle if Offers are null or empty
+                    //Description = post.Offers.FirstOrDefault()?.Description,
+                    //NationalId = post.Offers.FirstOrDefault()?.NationalIdInvestor,
+                    //ProfitRate = post.Offers.FirstOrDefault()?.ProfitRate ?? 0 // handle if Offers are null or empty
+                    Offers = post.Offers.Select(offer => new offerDto
+                    {
+                        Price = offer.Price,
+                        Description = offer.Description,
+                        NationalId = offer.NationalIdInvestor,
+                        ProfitRate = offer.ProfitRate
+                    }).ToList()
                 };
                 response.Add(dto);
             }

@@ -58,12 +58,12 @@ namespace graduationProject.Services
                 {
                     PostId = Offer.postId,
                     //OfferContent = offerContent,
-                    Image = fileName,
-                    Rrice = Offer.Price,
+                    NationalcardInvestor = fileName,
+                    Price = Offer.Price,
                     ProfitRate = Offer.ProfitRate,
-                    NationalId = Offer.NationalId,
+                    NationalIdInvestor = Offer.NationalId,
                     Description = Offer.Description,
-                    //Pos.IsHaveOffer = true
+                    //Post.IsHaveOffer = true
 
                 };
                 var posttt = await _context.Posts.FindAsync(Offer.postId);
