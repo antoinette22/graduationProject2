@@ -18,12 +18,14 @@ namespace graduationProject.Services
         private readonly UserManager<ApplicationUser> _userManager;
         private List<string> _allowedExtensions = new List<string> { ".jpg", ".png" };
         private long maxAllowedSize = 1048576;
+        private readonly IMailingService _mailingService;
         private readonly string _uploadsPath;
-        public userService(ApplicationDbContext context, UserManager<ApplicationUser> userManager, IWebHostEnvironment env)
+        public userService(ApplicationDbContext context, UserManager<ApplicationUser> userManager, IWebHostEnvironment env, IMailingService mailingService)
         {
             _context = context;
             _userManager = userManager;
             _uploadsPath = Path.Combine(env.WebRootPath, "cardId");
+            _mailingService = mailingService;
         }
 
 
@@ -75,16 +77,28 @@ namespace graduationProject.Services
 
         }
 
-        public async Task<ResultDto> AcceptOffer(AcceptOfferDto acceptOffer)
+        public async Task<ResultDto> AcceptOffer(AcceptOfferDto acceptOffer, string username)
         {
-            var offer = await _context.Offers.FindAsync(acceptOffer.offertId);
+            var user = await _userManager.FindByNameAsync(username);
+            var offer = await _context.Offers
+        .Include(o => o.Post) // Include the related post
+        .FirstOrDefaultAsync(o => o.Id == acceptOffer.offertId);
 
+            var postContent = offer.Post.Content;
             if (offer == null)
             {
                 return new ResultDto()
                 {
                     IsSuccess = false,
                     Message = "offer not found"
+                };
+            }
+            if (offer.IsAccepted == true)
+            {
+                return new ResultDto()
+                {
+                    IsSuccess = false,
+                    Message = "you are already accepted this offer"
                 };
             }
             if (acceptOffer.Image != null)
@@ -116,39 +130,69 @@ namespace graduationProject.Services
                 offer.NationalcardUser = fileName;
             }
 
-                offer.NationalIdUser = acceptOffer.NationalId;
-                offer.SignatureUser = acceptOffer.SignatureUser;
+            offer.NationalIdUser = acceptOffer.NationalId;
+            offer.SignatureUser = acceptOffer.SignatureUser;
+            offer.IsAccepted = true;
+            string message = $"Dear {user.UserName},\n\n" +
+     "We hope this email finds you well.\n\n" +
+     "You have just accepted the investor's offer on your post:\n\n" +
+     $"Post Content:\n{postContent}\n\n" +
+     "Best regards,\n" +
+     "Team Linka";
 
-                // Save the changes to the database
+            var result = await _mailingService.SendEmailAsync(user.Email, "You have just accepted the investor's offer", message, null);
+            if (result)
+            {
                 _context.Offers.Update(offer);
                 await _context.SaveChangesAsync();
+
 
                 return new ResultDto()
                 {
                     IsSuccess = true,
                     Message = "Offer accepted successfully"
                 };
+            }
+            return new ResultDto()
+            {
+                IsSuccess = false,
+                Message = "something went wrong"
+            };
         }
 
 
-            public async Task<searchDto> SearchUserProfile(string userName)
+
+        public async Task<List<searchDto>> SearchUserProfile(string firstName, string lastName)
+        {
+            var query = _userManager.Users.AsQueryable();
+
+            if (!string.IsNullOrWhiteSpace(firstName))
             {
-                var user = await _userManager.Users.FirstOrDefaultAsync(a => a.UserName.Contains(userName.Trim()));
-                if (user != null)
+                query = query.Where(a => a.FirstName.Contains(firstName.Trim()));
+            }
+
+            if (!string.IsNullOrWhiteSpace(lastName))
+            {
+                query = query.Where(a => a.LastName.Contains(lastName.Trim()));
+            }
+
+            var users = await query.ToListAsync();
+
+            if (users.Any())
+            {
+                return users.Select(user => new searchDto
                 {
-                    return new searchDto
-
-                    {
-                        userName = user.UserName,
-                    };
-                }
-                else return new searchDto
-
-                {
-                    userName = null,
-                };
-
+                    UserName = user.UserName,
+                    FirstName = user.FirstName,
+                    LastName = user.LastName,
+                    id = user.Id
+                }).ToList();
+            }
+            else
+            {
+                return new List<searchDto>();
             }
         }
+    }
 }
 

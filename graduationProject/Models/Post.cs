@@ -1,5 +1,4 @@
-﻿using graduationProject.DTOs.OfferDtos;
-using Microsoft.AspNetCore.Identity;
+﻿using Microsoft.AspNetCore.Identity;
 
 namespace graduationProject.Models
 {

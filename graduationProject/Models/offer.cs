@@ -1,6 +1,4 @@
-﻿using graduationProject.Models;
-
-namespace graduationProject.DTOs.OfferDtos
+﻿namespace graduationProject.Models
 {
     public class offer
     {
@@ -13,8 +11,9 @@ namespace graduationProject.DTOs.OfferDtos
         public string Description { get; set; }
         public string NationalIdInvestor { get; set; }
         public string? NationalIdUser { get; set; }
-        public string? NationalcardUser{ get; set; }
+        public string? NationalcardUser { get; set; }
         public string? SignatureUser { get; set; }
+        public bool IsAccepted { get; set; } = false;
 
 
     }

@@ -114,12 +114,15 @@ namespace graduationProject.Controllers
             }
         }
         //[Authorize]
-        [HttpGet("serch users")]
-
-        public async Task<IActionResult> SearchUsers(string userName)
-
+        [HttpGet("serchusers")]
+        public async Task<IActionResult> SearchUserProfile([FromQuery] string firstName, [FromQuery] string lastName)
         {
-            var result = await _userService.SearchUserProfile(userName);
+            if (string.IsNullOrWhiteSpace(firstName) && string.IsNullOrWhiteSpace(lastName))
+            {
+                return BadRequest(new { message = "At least one search parameter (first name or last name) is required." });
+            }
+
+            var result = await _userService.SearchUserProfile(firstName, lastName);
             return Ok(result);
         }
 
@@ -142,10 +145,12 @@ namespace graduationProject.Controllers
             var result = await _userService.RefuseOffer(id);
             return Ok(result);
         }
+
         [HttpPost("AcceptOffer")]
         public async Task<IActionResult> AcceptOffer([FromForm] AcceptOfferDto acceptOffer)
         {
-            var result = await _userService.AcceptOffer(acceptOffer);
+            var username = User.Identity.Name;
+            var result = await _userService.AcceptOffer(acceptOffer, username);
             if (result != null)
             {
                 return Ok(result);

@@ -1,5 +1,4 @@
-﻿using graduationProject.DTOs.OfferDtos;
-using graduationProject.Models;
+﻿using graduationProject.Models;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using System.Reflection.Emit;
